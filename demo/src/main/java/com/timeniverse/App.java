@@ -8,6 +8,11 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.timeniverse.db_utils.DbConnection;
+
 /**
  * JavaFX App
  */
@@ -21,6 +26,8 @@ public class App extends Application {
         stage.setTitle("Time-ni-verse");
         stage.setScene(scene);
         stage.show();
+        DbConnection.insertUserInfo("andrews", "1234", "andrews@gmail.com");
+        JSONArray userData = DbConnection.getUserInfo();
     }
 
     static void setRoot(String fxml) throws IOException {
@@ -34,6 +41,7 @@ public class App extends Application {
 
     public static void main(String[] args) {
         launch();
+        DbConnection.closeConnection();
     }
 
 }
