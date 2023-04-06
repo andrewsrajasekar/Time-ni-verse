@@ -1,51 +1,42 @@
 package com.timeniverse;
 
-import javafx.beans.property.SimpleStringProperty;
+import java.io.IOException;
+
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
  
 public class taskTracker {
-   private final SimpleStringProperty assignment = new SimpleStringProperty("");
-   private final SimpleStringProperty duration = new SimpleStringProperty("");
-   private final SimpleStringProperty deadline = new SimpleStringProperty("");
-   private final SimpleStringProperty priority = new SimpleStringProperty("");
-
-
+    @FXML private TableView<taskInput> tableView;
+    @FXML private TextField assignment;
+    @FXML private TextField duration;
+    @FXML private TextField deadline;
+    @FXML private TextField priority;
+    
     public taskTracker() {
-        this("", "", "","");
-    }
- 
-    public taskTracker(String assignment, String duration, String deadline, String priority) {
-        setAssignment(assignment);
-        setDuration(duration);
-        setDeadline(deadline);
-        setPriority(priority);
-    }
- 
-    public void setAssignment(String assign) {
-        assignment.set(assign);
-    }
-        
-    public String getDuration() {
-        return duration.get();
-    }
-    
-    public void setDuration(String hours) {
-        duration.set(hours);
-    }
-    
-    public String getDeadline() {
-        return deadline.get();
-    }
-    
-    public void setDeadline(String date) {
-        deadline.set(date);
-    }
 
-    public String getPriority() {
-        return priority.get();
     }
     
-    public void setPriority(String isPriority ) {
-        deadline.set(isPriority);
+    @FXML
+    private void switchToTaskInput() throws IOException {
+        App.setRoot("inputForm");
+    }
+    
+    @FXML
+    protected void addTask(ActionEvent event) {
+        ObservableList<taskInput> data = tableView.getItems();
+        data.add(new taskInput(assignment.getText(),
+            duration.getText(),
+            deadline.getText(),
+            priority.getText()
+        ));
+
+        assignment.setText("");
+        duration.setText("");
+        deadline.setText("");
+        priority.setText("");   
     }
 
 }
