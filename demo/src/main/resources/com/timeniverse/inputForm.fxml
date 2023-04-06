@@ -26,12 +26,14 @@
          <Insets right="10" bottom="10" top="10" left="10"></Insets>
       </GridPane.margin>
    </Label>
+      
+   <Button layoutX="210.0" layoutY="178.0" mnemonicParsing="false" onAction="#switchToMain" text="Back"></Button>
 
    <!-- Form Description and Fields for Creating a Task -->
    <Label text="Task Title : " GridPane.columnIndex="0" 
    GridPane.rowIndex="1" >
    </Label>
-   <TextField fx:id="taskField" prefHeight="40" 
+   <TextField fx:id="assignment" prefHeight="40" 
          GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
    <Label text="Duration Prediction (hours): " GridPane.columnIndex="0" 
@@ -43,15 +45,22 @@
    <Label text="Deadline : " GridPane.columnIndex="0" 
    GridPane.rowIndex="3" >
    </Label>
-   <PasswordField fx:id="deadline" prefHeight="40" 
+   <TextField fx:id="deadline" prefHeight="40" 
             GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
    <Label text="Completion Status : " GridPane.columnIndex="0" 
-   GridPane.rowIndex="4" >
+   GridPane.rowIndex="4">
    </Label>
-   <PasswordField fx:id="status" prefHeight="40" 
-            GridPane.columnIndex="1" GridPane.rowIndex="4"/>
 
-   
-   <Button GridPane.columnIndex="1" GridPane.rowIndex="5" layoutX="210.0" layoutY="178.0" mnemonicParsing="false" onAction="#switchToMain" text="Submit Task"></Button>
+   <GridPane GridPane.columnIndex="1" GridPane.rowIndex="4" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" >
+      <ToggleButton text="Minor"  fx:id="minor" onAction="#handleToggle" prefHeight="40" 
+      GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+      <ToggleButton text="Major" fx:id="major" onAction="#handleToggle" prefHeight="40"
+      GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+      <ToggleButton text="Critical" fx:id="critical" onAction="#handleToggle" prefHeight="40"
+      GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+   </GridPane>
+
+   <Button GridPane.columnIndex="1" GridPane.rowIndex="5" layoutX="210.0" layoutY="178.0" fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" text="Submit"></Button>
+
 </GridPane>

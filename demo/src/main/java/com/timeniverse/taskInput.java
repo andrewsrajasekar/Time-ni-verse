@@ -1,10 +1,6 @@
 package com.timeniverse;
 
-import java.io.IOException;
-
 import javafx.beans.property.SimpleStringProperty;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 
 public class taskInput {
     private final SimpleStringProperty assignment = new SimpleStringProperty("");
