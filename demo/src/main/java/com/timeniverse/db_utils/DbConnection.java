@@ -9,6 +9,8 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.bson.Document;
+import org.bson.json.JsonMode;
+import org.bson.json.JsonWriterSettings;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -55,7 +57,11 @@ public class DbConnection {
     private static MongoDatabase openConnection() {
         try {
             Properties properties = new Properties();
-            Path propFile = Paths.get(System.getProperty("user.dir") + SLASH + "demo" + SLASH + "src" + SLASH + "main"
+            String path = System.getProperty("user.dir");
+            if(!path.contains("demo")){
+                path +=  SLASH + "demo";
+            }
+            Path propFile = Paths.get(path + SLASH + "src" + SLASH + "main"
                     + SLASH + "resources" + SLASH + "application.properties");
             properties.load(Files.newBufferedReader(propFile));
             ConnectionString connectionString = new ConnectionString(
@@ -75,7 +81,9 @@ public class DbConnection {
     }
 
     public static void closeConnection() {
-        mongoClient.close();
+        if(mongoClient != null){
+            mongoClient.close();
+        }
     }
 
     public static void insertUserInfo(String username, String password, String email) {
@@ -92,6 +100,12 @@ public class DbConnection {
         switch (dbTableType) {
             case USERINFO:
                 dataInfo = getUserInfo();
+                break;
+            case FOLDERINFO:
+                dataInfo = getFolderInfo();
+                break;
+            case TASKINFO:
+                dataInfo = getTaskInfo();
                 break;
             default:
                 break;
@@ -170,7 +184,7 @@ public class DbConnection {
         return false;
     }
 
-    public static void insertTaskInfo(String taskname, String taskDescription, Integer folderId, Long timeToComplete, Long deadline, Boolean isCompleted, Boolean isPriority) throws Exception {
+    public static void insertTaskInfo(String taskname, String taskDescription, Integer folderId, Long timeToComplete, Long deadline, Boolean isPriority) throws Exception {
        if(!isFolderIdValid(folderId)){
         throw new Exception("Invalid Folder Id");
        }
@@ -181,19 +195,20 @@ public class DbConnection {
                 .append("task_info", taskDescription)
                 .append("time_to_complete", timeToComplete)
                 .append("deadline_timestamp", deadline)
-                .append("is_completed", isCompleted)
+                .append("is_completed", false)
                 .append("is_priority", isPriority);
         collection.insertOne(document);
     }
 
     public static JSONArray getTaskInfo() {
-        MongoCollection<Document> collection = database.getCollection(DB_TABLE_TYPE.FOLDERINFO.toString());
+        MongoCollection<Document> collection = database.getCollection(DB_TABLE_TYPE.TASKINFO.toString());
         JSONArray data = new JSONArray();
         FindIterable<Document> iterDoc = collection.find();
         Iterator<Document> it = iterDoc.iterator();
+        JsonWriterSettings relaxed = JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build();
         while (it.hasNext()) {
             Document document = it.next();
-            JSONObject documentData = new JSONObject(document.toJson());
+            JSONObject documentData = new JSONObject(document.toJson(relaxed));
             documentData.remove("_id");
             data.put(documentData);
         }

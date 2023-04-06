@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.control.*?>
 
-<GridPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.timeniverse.sceneController"  hgap="10" vgap="10">
+<GridPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.timeniverse.mainController"  hgap="10" vgap="10">
    <columnConstraints>
       <ColumnConstraints minWidth="100" prefWidth="200"
                          maxWidth="Infinity" halignment="RIGHT">
@@ -47,13 +47,15 @@
          <TableView fx:constant = "CONSTRAINED_RESIZE_POLICY"/>
       </columnResizePolicy>
       <columns>
-          <TableColumn text="Assignment">
+          <TableColumn text="Assignment" fx:id="task_name">
           </TableColumn>
-          <TableColumn text="Duration">
+          <TableColumn text="Description" fx:id="task_description">
           </TableColumn>
-          <TableColumn text="Deadline">
+          <TableColumn text="Duration" fx:id="task_duration">
           </TableColumn>
-          <TableColumn text="Priority">
+          <TableColumn text="Deadline" fx:id="task_deadline">
+          </TableColumn>
+          <TableColumn text="Priority" fx:id="task_priority">
          </TableColumn>
      </columns>    
    </TableView>

@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.control.*?>
 
-<GridPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.timeniverse.sceneController" hgap="10" vgap="10">
+<GridPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.timeniverse.inputFormController" hgap="10" vgap="10">
    <columnConstraints>
       <ColumnConstraints minWidth="100" prefWidth="200"
                          maxWidth="Infinity" halignment="RIGHT">
@@ -36,31 +36,33 @@
    <TextField fx:id="assignment" prefHeight="40" 
          GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-   <Label text="Duration Prediction (hours): " GridPane.columnIndex="0" 
+         <Label text="Task Description : " GridPane.columnIndex="0" 
    GridPane.rowIndex="2" >
    </Label>
-   <TextField fx:id="duration" prefHeight="40" 
+   <TextField fx:id="description" prefHeight="40" 
          GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
-   <Label text="Deadline : " GridPane.columnIndex="0" 
+   <Label text="Duration to Complete (hours): " GridPane.columnIndex="0" 
    GridPane.rowIndex="3" >
    </Label>
-   <TextField fx:id="deadline" prefHeight="40" 
-            GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+   <TextField fx:id="duration" prefHeight="40" 
+         GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
-   <Label text="Completion Status : " GridPane.columnIndex="0" 
-   GridPane.rowIndex="4">
+   <Label text="Deadline : " GridPane.columnIndex="0" 
+   GridPane.rowIndex="4" >
+   </Label>
+   <TextField fx:id="deadline" prefHeight="40" 
+            GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+   <Label text="Priority Status : " GridPane.columnIndex="0" 
+   GridPane.rowIndex="5">
    </Label>
 
-   <GridPane GridPane.columnIndex="1" GridPane.rowIndex="4" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" >
-      <ToggleButton text="Minor"  fx:id="minor" onAction="#handleToggle" prefHeight="40" 
+   <GridPane GridPane.columnIndex="1" GridPane.rowIndex="5" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" >
+      <ToggleButton text="High" fx:id="priority_button" prefHeight="40"
       GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-      <ToggleButton text="Major" fx:id="major" onAction="#handleToggle" prefHeight="40"
-      GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-      <ToggleButton text="Critical" fx:id="critical" onAction="#handleToggle" prefHeight="40"
-      GridPane.columnIndex="3" GridPane.rowIndex="0"/>
    </GridPane>
 
-   <Button GridPane.columnIndex="1" GridPane.rowIndex="5" layoutX="210.0" layoutY="178.0" fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" text="Submit"></Button>
+   <Button GridPane.columnIndex="1" GridPane.rowIndex="6" layoutX="210.0" layoutY="178.0" fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" text="Submit"></Button>
 
 </GridPane>
