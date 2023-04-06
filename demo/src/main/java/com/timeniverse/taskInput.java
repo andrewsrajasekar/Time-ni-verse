@@ -18,12 +18,6 @@ public class taskInput {
         setDeadline(deadline);
         setPriority(priority);
     }
-    @FXML
-    private void switchToTaskTracker() throws IOException {
-        App.setRoot("main");
-    }
-    
-
     
     public String getAssignment() {
         return assignment.get();

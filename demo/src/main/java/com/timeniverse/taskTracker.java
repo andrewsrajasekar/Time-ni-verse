@@ -20,11 +20,6 @@ public class taskTracker {
     }
     
     @FXML
-    private void switchToTaskInput() throws IOException {
-        App.setRoot("inputForm");
-    }
-    
-    @FXML
     protected void addTask(ActionEvent event) {
         ObservableList<taskInput> data = tableView.getItems();
         data.add(new taskInput(assignment.getText(),
