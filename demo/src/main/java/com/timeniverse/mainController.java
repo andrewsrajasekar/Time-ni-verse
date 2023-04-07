@@ -50,6 +50,7 @@ public class mainController {
 
         tableView.getItems().setAll(getData());
     }
+    
 
     private List<TaskData> getData(){
         JSONArray data = DbConnection.getTaskInfo();
