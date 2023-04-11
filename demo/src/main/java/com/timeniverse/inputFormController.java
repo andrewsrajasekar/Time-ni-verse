@@ -16,6 +16,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.stage.Stage;
@@ -41,6 +42,9 @@ public class inputFormController {
     private TextField deadline= new TextField();
 
     @FXML
+    private ComboBox courses;
+
+    @FXML
     private ToggleButton priority_button;
 
     @FXML
@@ -54,8 +58,6 @@ public class inputFormController {
     stage.show();
     }
     
-  
-
     @FXML
     protected void handleSubmitButtonAction(ActionEvent event) throws Exception {
         // Submitting the task button

@@ -5,6 +5,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.control.*?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 
 <GridPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.timeniverse.inputFormController" hgap="10" vgap="10">
    <columnConstraints>
@@ -53,16 +55,33 @@
    </Label>
    <TextField fx:id="deadline" prefHeight="40" 
             GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+   
+   <Label text="Course : " GridPane.columnIndex="0" 
+            GridPane.rowIndex="5" >
+   </Label>
+   <ComboBox fx:id="course" prefHeight="40" 
+      GridPane.columnIndex="1" GridPane.rowIndex="5">
+      <items>
+         <FXCollections fx:factory="observableArrayList">
+             <String fx:value="SWEN101"/>
+             <String fx:value="BIO101"/>
+             <String fx:value="CSCI101"/>
+         </FXCollections>
+     </items>
+     <value>
+         <String fx:value="Classes"/>
+     </value>
+   </ComboBox>
 
    <Label text="Priority Status : " GridPane.columnIndex="0" 
-   GridPane.rowIndex="5">
+   GridPane.rowIndex="6">
    </Label>
 
-   <GridPane GridPane.columnIndex="1" GridPane.rowIndex="5" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" >
+   <GridPane GridPane.columnIndex="1" GridPane.rowIndex="6" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" >
       <ToggleButton text="High" fx:id="priority_button" prefHeight="40"
       GridPane.columnIndex="1" GridPane.rowIndex="0"/>
    </GridPane>
 
-   <Button GridPane.columnIndex="1" GridPane.rowIndex="6" layoutX="210.0" layoutY="178.0" fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" text="Submit"></Button>
+   <Button GridPane.columnIndex="1" GridPane.rowIndex="7" layoutX="210.0" layoutY="178.0" fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" text="Submit"></Button>
 
 </GridPane>
