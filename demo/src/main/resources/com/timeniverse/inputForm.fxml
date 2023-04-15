@@ -59,18 +59,13 @@
    <Label text="Course : " GridPane.columnIndex="0" 
             GridPane.rowIndex="5" >
    </Label>
-   <ComboBox fx:id="course" prefHeight="40" 
+   <ComboBox fx:id="group" prefHeight="40" 
       GridPane.columnIndex="1" GridPane.rowIndex="5">
       <items>
          <FXCollections fx:factory="observableArrayList">
-             <String fx:value="SWEN101"/>
-             <String fx:value="BIO101"/>
-             <String fx:value="CSCI101"/>
+
          </FXCollections>
      </items>
-     <value>
-         <String fx:value="Classes"/>
-     </value>
    </ComboBox>
 
    <Label text="Priority Status : " GridPane.columnIndex="0" 
@@ -83,5 +78,6 @@
    </GridPane>
 
    <Button GridPane.columnIndex="1" GridPane.rowIndex="7" layoutX="210.0" layoutY="178.0" fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" text="Submit"></Button>
+   <Button GridPane.columnIndex="1" GridPane.rowIndex="7" layoutX="210.0" layoutY="178.0" fx:id="updateButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" visible="false" text="Update"></Button>
 
 </GridPane>

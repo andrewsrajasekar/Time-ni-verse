@@ -50,6 +50,8 @@
          <TableView fx:constant = "CONSTRAINED_RESIZE_POLICY"/>
       </columnResizePolicy>
       <columns>
+         <TableColumn text="Id" visible="false" fx:id="task_id">
+          </TableColumn>
           <TableColumn text="Assignment" fx:id="task_name">
           </TableColumn>
           <TableColumn text="Description" fx:id="task_description">
@@ -64,20 +66,20 @@
    </TableView>
 
    <!-- Task Detail -->
-   <VBox fx:id="Detail" GridPane.columnIndex="2" GridPane.rowIndex="1" spacing="10">
+   <VBox visible="false" fx:id="vbox_detail" GridPane.columnIndex="2" GridPane.rowIndex="1" spacing="10">
 
    <padding>
         <Insets right="20" />
     </padding>
 
-   <Label text="Task Name Here" style="-fx-font-weight: bold; -fx-font-size: 20;"/>
+   <Label text="Task Name Here" style="-fx-font-weight: bold; -fx-font-size: 20;" fx:id="detail_task_name"/>
 
-   <Label style="-fx-wrap-text: true;">Task Details Here (It's totoally fine if the text is too long for a row to hold)</Label>
+   <Label style="-fx-wrap-text: true;" fx:id="detail_task_description"></Label>
 
    <HBox spacing="10">
-      <Button>Finish</Button>
-      <Button>Edit</Button>
-      <Button style="-fx-background-color: red; -fx-text-fill: white;">Delete</Button>
+      <Button fx:id="finishButton" onAction="#handleTaskFinish">Finish</Button>
+      <Button fx:id="editButton" onAction="#handleEdit">Edit</Button>
+      <Button fx:id="deleteButton" onAction="#handleTaskDelete" style="-fx-background-color: red; -fx-text-fill: white;">Delete</Button>
    </HBox>
 
    </VBox>
