@@ -50,7 +50,7 @@
    <TextField fx:id="duration" prefHeight="40" 
          GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
-   <Label text="Deadline : " GridPane.columnIndex="0" 
+   <Label text="Deadline (MMDDYYYY): " GridPane.columnIndex="0" 
    GridPane.rowIndex="4" >
    </Label>
    <TextField fx:id="deadline" prefHeight="40" 
