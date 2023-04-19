@@ -36,48 +36,71 @@
    GridPane.rowIndex="1" >
    </Label>
    <TextField fx:id="assignment" prefHeight="40" 
-         GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+         GridPane.columnIndex="1" GridPane.rowIndex="1">
+      <GridPane.margin>
+         <Insets right="30"/>
+      </GridPane.margin>   
+   </TextField>
 
-         <Label text="Task Description : " GridPane.columnIndex="0" 
+   <Label text="Task Description : " GridPane.columnIndex="0" 
    GridPane.rowIndex="2" >
    </Label>
    <TextField fx:id="description" prefHeight="40" 
-         GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+         GridPane.columnIndex="1" GridPane.rowIndex="2">
+      <GridPane.margin>
+         <Insets right="30"/>
+      </GridPane.margin>   
+   </TextField>
 
    <Label text="Duration to Complete (hours): " GridPane.columnIndex="0" 
    GridPane.rowIndex="3" >
    </Label>
    <TextField fx:id="duration" prefHeight="40" 
-         GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+         GridPane.columnIndex="1" GridPane.rowIndex="3">
+      <GridPane.margin>
+         <Insets right="30"/>
+      </GridPane.margin>   
+   </TextField>
 
    <Label text="Deadline (MMDDYYYY): " GridPane.columnIndex="0" 
    GridPane.rowIndex="4" >
    </Label>
    <TextField fx:id="deadline" prefHeight="40" 
-            GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-   
+            GridPane.columnIndex="1" GridPane.rowIndex="4">
+      <GridPane.margin>
+         <Insets right="30"/>
+      </GridPane.margin>   
+   </TextField>
+
+   <Label text="New Course Name : " GridPane.columnIndex="0" 
+   GridPane.rowIndex="5"></Label>
+   <TextField fx:id="folder" prefHeight="40" GridPane.columnIndex="1" GridPane.rowIndex="5">
+       <GridPane.margin>
+       <Insets right="30"/>
+       </GridPane.margin>
+   </TextField>
+
    <Label text="Course : " GridPane.columnIndex="0" 
-            GridPane.rowIndex="5" >
+            GridPane.rowIndex="6" >
    </Label>
    <ComboBox fx:id="group" prefHeight="40" 
-      GridPane.columnIndex="1" GridPane.rowIndex="5">
+      GridPane.columnIndex="1" GridPane.rowIndex="6">
       <items>
          <FXCollections fx:factory="observableArrayList">
-
          </FXCollections>
      </items>
    </ComboBox>
 
    <Label text="Priority Status : " GridPane.columnIndex="0" 
-   GridPane.rowIndex="6">
+   GridPane.rowIndex="7">
    </Label>
 
-   <GridPane GridPane.columnIndex="1" GridPane.rowIndex="6" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" >
+   <GridPane GridPane.columnIndex="1" GridPane.rowIndex="7" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" >
       <ToggleButton text="High" fx:id="priority_button" prefHeight="40"
       GridPane.columnIndex="1" GridPane.rowIndex="0"/>
    </GridPane>
 
-   <Button GridPane.columnIndex="1" GridPane.rowIndex="7" layoutX="210.0" layoutY="178.0" fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" text="Submit"></Button>
-   <Button GridPane.columnIndex="1" GridPane.rowIndex="7" layoutX="210.0" layoutY="178.0" fx:id="updateButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" visible="false" text="Update"></Button>
+   <Button GridPane.columnIndex="1" GridPane.rowIndex="8" layoutX="210.0" layoutY="178.0" fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" text="Submit"></Button>
+   <Button GridPane.columnIndex="1" GridPane.rowIndex="8" layoutX="210.0" layoutY="178.0" fx:id="updateButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" visible="false" text="Update"></Button>
 
 </GridPane>

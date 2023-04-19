@@ -65,6 +65,14 @@ public class mainController {
         stage.show();
     }
 
+    public void switchToFolderForm(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("folderForm.fxml"));
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root, 1000, 500);
+        stage.setScene(scene);
+        stage.show();
+    }
+
     @FXML
     public void handleTaskFinish(ActionEvent event) {
         DbConnection.updateTaskCompletion(currentTaskData.getId(), true);

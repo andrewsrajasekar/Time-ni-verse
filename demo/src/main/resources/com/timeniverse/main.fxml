@@ -27,17 +27,17 @@
          <Font name="Arial" size="24" ></Font>
       </font>
       <GridPane.margin>
-         <Insets right="10" bottom="10" top="10" left="10"></Insets>
+         <Insets right="10" bottom="10" top="10" left="40"></Insets>
       </GridPane.margin>
    </Label>
-   <Button layoutX="210.0" layoutY="178.0" mnemonicParsing="false" onAction="#switchToInputForm" text="Create Task"></Button>
-   
+
+   <Button GridPane.columnIndex="0" GridPane.rowIndex="0" layoutX="210.0" layoutY="178.0" mnemonicParsing="false" onAction="#switchToInputForm" text="Create Task"></Button>
+
    <!-- List of groups/classes -->
    <ListView fx:id="listView" GridPane.columnIndex="0" GridPane.rowIndex="1">
       <GridPane.margin>
          <Insets left="10" right="10"></Insets>
       </GridPane.margin>
-      <Label text="LIST VIEW will go here"></Label>
    </ListView>
 
    <!-- Assignments/Tasks will be here as a table-->
