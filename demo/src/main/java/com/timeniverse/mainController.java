@@ -14,6 +14,8 @@ import com.timeniverse.db_utils.DbConnection;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -28,6 +30,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
@@ -41,8 +44,9 @@ public class mainController {
     private Integer currentRowSelected = 0;
     private TaskData currentTaskData;
     private TaskData toBeEditedTask;
+    private ObservableList<TaskData> originalList;
 
-    @FXML private TableView tableView;
+    @FXML private TableView<TaskData> tableView;
     @FXML private TableColumn<TaskData, Integer> task_id;
     @FXML private TableColumn<TaskData, String> task_name;
     @FXML private TableColumn<TaskData, String> task_description;
@@ -57,7 +61,7 @@ public class mainController {
     @FXML private Button completeButton;
     @FXML private Button editButton;
     @FXML private Button deleteButton;
-    
+    @FXML private TextField searchBox;
 
     public void switchToInputForm(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("inputForm.fxml"));
@@ -128,14 +132,37 @@ public class mainController {
         EventHandler<MouseEvent> onClick = this::onRowClick;
         
         tableView.setRowFactory(param -> {
-            TableRow<Object> row = new TableRow<>();
+            TableRow<TaskData> row = new TableRow<TaskData>();
             row.setOnMouseClicked(onClick);
             return row;
           });
 
+        // Save a copy of the original list of tasks
+        originalList = tableView.getItems();
+
         setListViewFolderInfo();
         listViewListener();
-        
+    }
+
+    public void searchTable(ActionEvent event) throws IOException {
+        String searchTerm = searchBox.getText();
+
+        if (searchTerm == null || searchTerm.isEmpty()) {
+            // If the search box is empty, restore the original list
+            tableView.setItems(originalList);
+        } else {
+            // Get the list of tasks from the TableView
+            ObservableList<TaskData> tasks = tableView.getItems();
+    
+            // Filter the tasks based on the search term
+            FilteredList<TaskData> filteredTasks = tasks.filtered(task -> {
+                // Replace this with your own logic to determine if the task should be included in the filtered list
+                return task.getName().toLowerCase().contains(searchTerm.toLowerCase());
+            });
+    
+            // Set the filtered tasks to be displayed in the TableView
+            tableView.setItems(filteredTasks);
+        }
     }
 
     public void onRowClick(MouseEvent event){
@@ -357,6 +384,8 @@ public class mainController {
             this.folder_id = folder_id;
         }
     }
+
+
 
     public class FolderData{
         Integer id;
