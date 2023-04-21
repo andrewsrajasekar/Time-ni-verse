@@ -70,6 +70,9 @@ public class DbConnection {
         try {
             Properties properties = new Properties();
             String path = System.getProperty("user.dir");
+            if(!path.contains("Time-ni-verse")){
+                path +=  SLASH + "Time-ni-verse";
+            }
             if(!path.contains("demo")){
                 path +=  SLASH + "demo";
             }

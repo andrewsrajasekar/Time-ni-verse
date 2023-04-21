@@ -14,6 +14,7 @@ import com.timeniverse.db_utils.DbConnection;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
@@ -89,6 +90,7 @@ public class mainController {
 
         if (result.get() == ButtonType.OK) {
             tableView.getItems().setAll(getData());
+            doSearchManual();
             vbox_detail.setVisible(false);
         }
     }
@@ -103,8 +105,14 @@ public class mainController {
 
         if (result.get() == ButtonType.OK) {
             tableView.getItems().setAll(getData());
+            doSearchManual();
             vbox_detail.setVisible(false);
         }
+    }
+
+    private void doSearchManual(){
+        originalList = tableView.getItems();
+        searchTable(null);
     }
 
     @FXML
@@ -128,6 +136,8 @@ public class mainController {
 
         tableView.getItems().setAll(getData());
 
+        doSearchManual();
+
 
         EventHandler<MouseEvent> onClick = this::onRowClick;
         
@@ -137,14 +147,13 @@ public class mainController {
             return row;
           });
 
-        // Save a copy of the original list of tasks
-        originalList = tableView.getItems();
+
 
         setListViewFolderInfo();
         listViewListener();
     }
 
-    public void searchTable(ActionEvent event) throws IOException {
+    public void searchTable(ActionEvent event){
         String searchTerm = searchBox.getText();
 
         if (searchTerm == null || searchTerm.isEmpty()) {
@@ -152,7 +161,7 @@ public class mainController {
             tableView.setItems(originalList);
         } else {
             // Get the list of tasks from the TableView
-            ObservableList<TaskData> tasks = tableView.getItems();
+            ObservableList<TaskData> tasks = originalList;
     
             // Filter the tasks based on the search term
             FilteredList<TaskData> filteredTasks = tasks.filtered(task -> {
@@ -208,13 +217,15 @@ public class mainController {
         listView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<FolderData>() {
             @Override
             public void changed(ObservableValue<? extends FolderData> observable, FolderData oldValue, FolderData newValue) {
+                tableView.setItems(null);
                 if(newValue.getFolder_name() == "All"){
-                    tableView.getItems().setAll(getData());
+                    tableView.setItems(getData());
                 }else if(newValue.getFolder_name() == "Completed Task"){
-                    tableView.getItems().setAll(getCompletedTaskData());
+                    tableView.setItems(getCompletedTaskData());
                 }else{
-                    tableView.getItems().setAll(getDataBasedOnFolderId(newValue.getId()));
+                    tableView.setItems(getDataBasedOnFolderId(newValue.getId()));
                 }
+                doSearchManual();
                 currentFolder = newValue;
                 resetData();
             }
@@ -271,10 +282,10 @@ public class mainController {
     }
     
 
-    private List<TaskData> getData(){
+    private ObservableList<TaskData> getData(){
         JSONArray data = DbConnection.getTaskInfo();
         Iterator<Object> dataIter = data.iterator();
-        List<TaskData> result = new ArrayList<>();
+        ObservableList<TaskData> result = FXCollections.observableArrayList();
         while(dataIter.hasNext()){
             JSONObject values = (JSONObject)dataIter.next();
             TaskData valueObj = new TaskData();
@@ -291,10 +302,10 @@ public class mainController {
         return result;
     }
 
-    private List<TaskData> getCompletedTaskData(){
+    private ObservableList<TaskData> getCompletedTaskData(){
         JSONArray data = DbConnection.getCompletedTaskInfo();
         Iterator<Object> dataIter = data.iterator();
-        List<TaskData> result = new ArrayList<>();
+        ObservableList<TaskData> result = FXCollections.observableArrayList();
         while(dataIter.hasNext()){
             JSONObject values = (JSONObject)dataIter.next();
             TaskData valueObj = new TaskData();
@@ -311,10 +322,10 @@ public class mainController {
         return result;
     }
 
-    private List<TaskData> getDataBasedOnFolderId(Integer folderId){
+    private ObservableList<TaskData> getDataBasedOnFolderId(Integer folderId){
         JSONArray data = DbConnection.getTaskInfoBasedOnFolderId(folderId);
         Iterator<Object> dataIter = data.iterator();
-        List<TaskData> result = new ArrayList<>();
+        ObservableList<TaskData> result = FXCollections.observableArrayList();
         while(dataIter.hasNext()){
             JSONObject values = (JSONObject)dataIter.next();
             TaskData valueObj = new TaskData();
