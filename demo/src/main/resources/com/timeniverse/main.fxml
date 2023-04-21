@@ -82,6 +82,14 @@
 
    <Label style="-fx-wrap-text: true;" fx:id="detail_task_description"></Label>
 
+   <!-- The sweet reminder of the deadline status of the task -->
+
+   <Label text=" This task is expiring today! " fx:id="due_today" style="-fx-background-color: #F2E5B6; -fx-text-fill: #5D4037; -fx-border-color: #000000; -fx-border-radius: 5px;"></Label>
+
+   <Label text=" This task has expired! " fx:id="due_expired" style="-fx-background-color: #FFC0CB; -fx-text-fill: #8B0000; -fx-border-color: #000000; -fx-border-radius: 5px;"></Label>
+
+
+
    <HBox spacing="10">
       <Button fx:id="completeButton" onAction="#handleTaskFinish">Complete</Button>
       <Button fx:id="editButton" onAction="#handleEdit">Edit</Button>
