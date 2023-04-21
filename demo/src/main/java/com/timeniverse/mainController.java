@@ -42,10 +42,10 @@ import javafx.stage.Window;
 public class mainController {
     private Stage stage;
     private Scene scene;
-    private Integer currentRowSelected = 0;
     private TaskData currentTaskData;
-    private TaskData toBeEditedTask;
     private ObservableList<TaskData> originalList;
+    private JSONObject expiringStyle = new JSONObject().put("-fx-background-color", "#F2E5B6").put("-fx-text-fill", "#5D4037").put("text", " This task is expiring today! ");
+    private JSONObject expiredStyle = new JSONObject().put("-fx-background-color", "#FFC0CB").put("-fx-text-fill", "#8B0000").put("text", " This task has expired! ");
 
     @FXML private TableView<TaskData> tableView;
     @FXML private TableColumn<TaskData, Integer> task_id;
@@ -63,6 +63,7 @@ public class mainController {
     @FXML private Button editButton;
     @FXML private Button deleteButton;
     @FXML private TextField searchBox;
+    @FXML private Label due_banner;
 
     public void switchToInputForm(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("inputForm.fxml"));
@@ -178,8 +179,6 @@ public class mainController {
         if(event.getEventType().getName().equals("MOUSE_CLICKED") ){
             @SuppressWarnings("unchecked")
             TableRow<Object> row = (TableRow<Object>) event.getSource();
-            Boolean isVBoxVisible = vbox_detail.isVisible();
-            currentRowSelected = row.getIndex();
             if(row.isEmpty()){
                 vbox_detail.setVisible(false);
                 tableView.getSelectionModel().clearSelection();
@@ -192,9 +191,36 @@ public class mainController {
                     if(currentFolder.getFolder_name().equalsIgnoreCase("Completed Task")){
                         editButton.setDisable(true);
                         completeButton.setDisable(true);
+                        due_banner.setVisible(false);
                     }else{
                         editButton.setDisable(false);
                         completeButton.setDisable(false);
+                        LocalDate today = LocalDate.now();
+                        if(currentTaskData.getDeadline().equals(today)){
+                            due_banner.setText(expiringStyle.getString("text"));
+                            Iterator<String> due_bannerIter = expiringStyle.keys();
+                            while(due_bannerIter.hasNext()){
+                                String key = due_bannerIter.next();
+                                if(key.equals("text")){
+                                    continue;
+                                }
+                                due_banner.setStyle(key + ":" + expiringStyle.get(key));
+                            }
+                            due_banner.setVisible(true);
+                        }else if(currentTaskData.getDeadline().isBefore(today)){
+                            due_banner.setText(expiredStyle.getString("text"));
+                            Iterator<String> due_bannerIter = expiredStyle.keys();
+                            while(due_bannerIter.hasNext()){
+                                String key = due_bannerIter.next();
+                                if(key.equals("text")){
+                                    continue;
+                                }
+                                due_banner.setStyle(key + ":" + expiredStyle.get(key));
+                            }
+                            due_banner.setVisible(true);
+                        }else{
+                            due_banner.setVisible(false);
+                        }
                     }
                 }  
             }
@@ -207,10 +233,6 @@ public class mainController {
         listView.getItems().setAll(getFolderData(true));
         listView.getSelectionModel().select(0);
         listView.getFocusModel().focus(0);
-    }
-
-    public void setListViewFolderBasedOnFolderId(Integer folderId){
-
     }
 
     public void listViewListener(){
@@ -234,7 +256,6 @@ public class mainController {
 
     public void resetData(){
         vbox_detail.setVisible(false);
-        currentRowSelected = 0;
         currentTaskData = null;
     }
 
