@@ -1,10 +1,14 @@
 package com.timeniverse;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,8 +31,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.StringConverter;
@@ -47,7 +55,7 @@ public class inputFormController {
         this.assignment.setText(currentTaskData.getName());
         this.description.setText(currentTaskData.getDescription());
         this.duration.setText(currentTaskData.getDuration().toString());
-        this.deadline.setText(currentTaskData.getDeadline().toString());
+        this.deadline.setValue(currentTaskData.getDeadline());
         ObservableList<FolderData> data = group.getItems();
         Integer index = 0;
         for(FolderData value : data){
@@ -72,7 +80,7 @@ public class inputFormController {
     private TextField duration = new TextField();
 
     @FXML
-    private TextField deadline= new TextField();
+    private DatePicker deadline= new DatePicker();
 
     @FXML
     private ComboBox<FolderData> group;
@@ -85,6 +93,11 @@ public class inputFormController {
 
     @FXML
     private Button updateButton;
+
+    @FXML
+    private Button addFolders;
+
+    @FXML private VBox vbox_detail;
 
     public void switchToMain(ActionEvent event) throws IOException {
     root = FXMLLoader.load(getClass().getResource("main.fxml"));
@@ -115,9 +128,15 @@ public class inputFormController {
                     "Please enter the time to allocate for the task");
             return;
         }
-        if (deadline.getText().trim().isEmpty()) {
+        if (! ( Long.valueOf(duration.getText().trim().toString()) >= 1 && Long.valueOf(duration.getText().trim().toString()) <= 24 ) ) {
+
             AlertHelper.showAlert(Alert.AlertType.ERROR, owner, "Form Error!",
-                    "Please enter a deadline date using the format: MM-DD-YYYY");
+                    "Duration must be greater than 1 and less than 24");
+            return;
+        }
+        if (deadline.getValue() == null) {
+            AlertHelper.showAlert(Alert.AlertType.ERROR, owner, "Form Error!",
+                    "Please select a deadline");
             return;
         }
         if (group.getValue() != null) {
@@ -133,13 +152,13 @@ public class inputFormController {
                 assignment.clear();
                 description.clear();
                 duration.clear();
-                deadline.clear();
+                deadline.setValue(null);
                 priority_button.setSelected(false);
             }
         } else {
             if (isUpdate) {
                 DbConnection.updateTask(existingTaskId, assignment.getText().trim(), description.getText().trim(),
-                        folder_id, Long.valueOf(duration.getText().trim()), Long.valueOf(deadline.getText().trim()),
+                        folder_id, Long.valueOf(duration.getText().trim()), DbConnection.getTimeStampFromLocalDate(deadline.getValue()),
                         priority_button.isSelected());
                 Optional<ButtonType> result = AlertHelper.showAlert(Alert.AlertType.INFORMATION, owner, "Task Updated!",
                         "Task Updated");
@@ -148,7 +167,7 @@ public class inputFormController {
                 }
             } else {
                 DbConnection.insertTaskInfo(assignment.getText().trim(), description.getText().trim(), folder_id,
-                        Long.valueOf(duration.getText().trim()), Long.valueOf(deadline.getText().trim()),
+                        Long.valueOf(duration.getText().trim()), DbConnection.getTimeStampFromLocalDate(deadline.getValue()),
                         priority_button.isSelected());
 
                 Optional<ButtonType> result = AlertHelper.showAlert(Alert.AlertType.INFORMATION, owner, "Task Created!",
@@ -158,7 +177,7 @@ public class inputFormController {
                     assignment.clear();
                     description.clear();
                     duration.clear();
-                    deadline.clear();
+                    deadline.setValue(null);
                     priority_button.setSelected(false);
                 }
             }
@@ -176,14 +195,15 @@ public class inputFormController {
                 }
             }
         });
+    }
 
-        deadline.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, 
-                String newValue) {
-                if (!newValue.matches("\\d*")) {
-                    deadline.setText(newValue.replaceAll("[^\\d]", ""));
-                }
+    private void setCurrentDate(){
+        deadline.setDayCellFactory(picker -> new DateCell() {
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                LocalDate today = LocalDate.now();
+    
+                setDisable(empty || date.compareTo(today) < 0 );
             }
         });
     }
@@ -193,6 +213,7 @@ public class inputFormController {
         updateButton.setVisible(false);
         setNumberOnlyField();
         setDropDownData();
+        setCurrentDate();
 
         group.setConverter(new StringConverter<FolderData>() {
 
@@ -209,6 +230,7 @@ public class inputFormController {
                 return folderData;
             }
         });
+
     }
 
     private void setDropDownData(){
@@ -241,6 +263,33 @@ public class inputFormController {
         }
 
         return result;
+    }
+
+    public void handleAddFolder(ActionEvent event) throws IOException{
+        HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("folderPopUp.fxml"));
+            // initializing the controller
+            folderPopController popupController = new folderPopController();
+            loader.setController(popupController);
+            Parent layout;
+            try {
+                layout = loader.load();
+                Scene scene = new Scene(layout);
+                // this is the popup stage
+                Stage popupStage = new Stage();
+                // Giving the popup controller access to the popup stage (to allow the controller to close the stage) 
+                popupController.setStage(popupStage);
+                popupStage.initOwner((Stage)((Node)event.getSource()).getScene().getWindow());
+                popupStage.initModality(Modality.WINDOW_MODAL);
+                popupStage.setScene(scene);
+                popupStage.showAndWait();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            setDropDownData();
+
     }
     
 }

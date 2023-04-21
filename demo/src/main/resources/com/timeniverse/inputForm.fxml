@@ -62,23 +62,17 @@
       </GridPane.margin>   
    </TextField>
 
-   <Label text="Deadline (MMDDYYYY): " GridPane.columnIndex="0" 
+   <Label text="Deadline: " GridPane.columnIndex="0" 
    GridPane.rowIndex="4" >
    </Label>
-   <TextField fx:id="deadline" prefHeight="40" 
+
+    <DatePicker fx:id="deadline" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+   <!-- <TextField fx:id="deadline" prefHeight="40" 
             GridPane.columnIndex="1" GridPane.rowIndex="4">
       <GridPane.margin>
          <Insets right="30"/>
       </GridPane.margin>   
-   </TextField>
-
-   <Label text="New Course Name : " GridPane.columnIndex="0" 
-   GridPane.rowIndex="5"></Label>
-   <TextField fx:id="folder" prefHeight="40" GridPane.columnIndex="1" GridPane.rowIndex="5">
-       <GridPane.margin>
-       <Insets right="30"/>
-       </GridPane.margin>
-   </TextField>
+   </TextField> -->
 
    <Label text="Course : " GridPane.columnIndex="0" 
             GridPane.rowIndex="6" >
@@ -91,16 +85,22 @@
      </items>
    </ComboBox>
 
+   <Button fx:id="addFolders" onAction="#handleAddFolder" GridPane.columnIndex="1" 
+   GridPane.rowIndex="7">Add Courses</Button>
+
    <Label text="Priority Status : " GridPane.columnIndex="0" 
-   GridPane.rowIndex="7">
+   GridPane.rowIndex="8">
    </Label>
 
-   <GridPane GridPane.columnIndex="1" GridPane.rowIndex="7" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" >
+   <GridPane GridPane.columnIndex="1" GridPane.rowIndex="8" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" >
       <ToggleButton text="High" fx:id="priority_button" prefHeight="40"
       GridPane.columnIndex="1" GridPane.rowIndex="0"/>
    </GridPane>
 
-   <Button GridPane.columnIndex="1" GridPane.rowIndex="8" layoutX="210.0" layoutY="178.0" fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" text="Submit"></Button>
-   <Button GridPane.columnIndex="1" GridPane.rowIndex="8" layoutX="210.0" layoutY="178.0" fx:id="updateButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" visible="false" text="Update"></Button>
+  
+
+   <Button GridPane.columnIndex="1" GridPane.rowIndex="9" layoutX="210.0" layoutY="178.0" fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" text="Submit"></Button>
+   <Button GridPane.columnIndex="1" GridPane.rowIndex="9" layoutX="210.0" layoutY="178.0" fx:id="updateButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" visible="false" text="Update"></Button>
 
 </GridPane>
+

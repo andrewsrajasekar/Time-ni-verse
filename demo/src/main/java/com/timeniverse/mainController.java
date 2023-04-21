@@ -1,6 +1,7 @@
 package com.timeniverse;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,7 +26,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TablePosition;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -52,7 +53,8 @@ public class mainController {
     @FXML private Label detail_task_name;
     @FXML private Label detail_task_description;
     @FXML private ListView<FolderData> listView;
-    @FXML private Button finishButton;
+    @FXML private FolderData currentFolder;
+    @FXML private Button completeButton;
     @FXML private Button editButton;
     @FXML private Button deleteButton;
     
@@ -76,7 +78,7 @@ public class mainController {
     @FXML
     public void handleTaskFinish(ActionEvent event) {
         DbConnection.updateTaskCompletion(currentTaskData.getId(), true);
-        Window owner = finishButton.getScene().getWindow();
+        Window owner = completeButton.getScene().getWindow();
 
         Optional<ButtonType> result = AlertHelper.showAlert(AlertType.INFORMATION, owner, "Task Finished!",
                 "Task Marked as Finished!");
@@ -122,40 +124,51 @@ public class mainController {
 
         tableView.getItems().setAll(getData());
 
-        tableView.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if(event.getEventType().getName().equals("MOUSE_CLICKED") ){
-                    Boolean isVBoxVisible = vbox_detail.isVisible();
-                    currentTaskData = (TaskData)tableView.getSelectionModel().getSelectedItem();
-                    if(tableView.getSelectionModel().getSelectedCells().size() > 0){
-                        TablePosition pos = (TablePosition) tableView.getSelectionModel().getSelectedCells().get(0);
-                        int row = pos.getRow();
-                        if(row == currentRowSelected){
-                            if(isVBoxVisible){
-                                vbox_detail.setVisible(false);
-                                return;
-                            }
-                        }
-                        row = currentRowSelected;
-                        vbox_detail.setVisible(true);
-                        detail_task_name.setText(currentTaskData.getName());
-                        detail_task_description.setText(currentTaskData.getDescription());
-    
-    
-                    }   
-                }
-            }
-        });
+
+        EventHandler<MouseEvent> onClick = this::onRowClick;
+        
+        tableView.setRowFactory(param -> {
+            TableRow<Object> row = new TableRow<>();
+            row.setOnMouseClicked(onClick);
+            return row;
+          });
 
         setListViewFolderInfo();
         listViewListener();
         
     }
 
+    public void onRowClick(MouseEvent event){
+        if(event.getEventType().getName().equals("MOUSE_CLICKED") ){
+            @SuppressWarnings("unchecked")
+            TableRow<Object> row = (TableRow<Object>) event.getSource();
+            Boolean isVBoxVisible = vbox_detail.isVisible();
+            currentRowSelected = row.getIndex();
+            if(row.isEmpty()){
+                vbox_detail.setVisible(false);
+                tableView.getSelectionModel().clearSelection();
+            }else{
+                currentTaskData = (TaskData)row.getItem();
+                if(tableView.getSelectionModel().getSelectedCells().size() > 0){
+                    vbox_detail.setVisible(true);
+                    detail_task_name.setText(currentTaskData.getName());
+                    detail_task_description.setText(currentTaskData.getDescription());
+                    if(currentFolder.getFolder_name().equalsIgnoreCase("Completed Task")){
+                        editButton.setDisable(true);
+                        completeButton.setDisable(true);
+                    }else{
+                        editButton.setDisable(false);
+                        completeButton.setDisable(false);
+                    }
+                }  
+            }
+            event.consume();
+        }
+    }
+
     public void setListViewFolderInfo(){
         listView.getItems().clear();
-        listView.getItems().setAll(getFolderData());
+        listView.getItems().setAll(getFolderData(true));
         listView.getSelectionModel().select(0);
         listView.getFocusModel().focus(0);
     }
@@ -170,9 +183,12 @@ public class mainController {
             public void changed(ObservableValue<? extends FolderData> observable, FolderData oldValue, FolderData newValue) {
                 if(newValue.getFolder_name() == "All"){
                     tableView.getItems().setAll(getData());
+                }else if(newValue.getFolder_name() == "Completed Task"){
+                    tableView.getItems().setAll(getCompletedTaskData());
                 }else{
                     tableView.getItems().setAll(getDataBasedOnFolderId(newValue.getId()));
                 }
+                currentFolder = newValue;
                 resetData();
             }
         });
@@ -184,18 +200,24 @@ public class mainController {
         currentTaskData = null;
     }
 
-    public List<FolderData> getFolderData(){
+    public List<FolderData> getFolderData(Boolean setDefaultAll){
         JSONArray data = DbConnection.getFolderInfoInSortedOrder(DbConnection.getFolderInfo());
         Iterator<Object> dataIter = data.iterator();
         List<FolderData> result = new ArrayList<>();
         Integer index = 0;
        
-        FolderData allObj = new FolderData();
-        allObj.setId(0);
-        allObj.setFolder_name("All");
-        allObj.setIs_default(false);
-        allObj.setOrder_number(0);
-        result.add(allObj);
+        FolderData systemObj = new FolderData();
+        systemObj.setId(0);
+        systemObj.setFolder_name("All");
+        systemObj.setIs_default(false);
+        systemObj.setOrder_number(0);
+        result.add(systemObj);
+
+        if(setDefaultAll){
+            currentFolder = systemObj;
+        }
+
+        Integer largeInteger = 1;
         
         while(dataIter.hasNext()){
             JSONObject values = (JSONObject)dataIter.next();
@@ -205,8 +227,18 @@ public class mainController {
             valueObj.setIs_default(Boolean.valueOf(""+values.get("is_default")));
             valueObj.setOrder_number(Integer.valueOf(""+values.get("order_number")));
             index++;
+            if(largeInteger < valueObj.getId()){
+                largeInteger = valueObj.getId();
+            }
             result.add(valueObj);
         }
+
+        systemObj = new FolderData();
+        systemObj.setId(largeInteger + 1);
+        systemObj.setFolder_name("Completed Task");
+        systemObj.setIs_default(false);
+        systemObj.setOrder_number(0);
+        result.add(systemObj);
 
         return result;
     }
@@ -224,7 +256,27 @@ public class mainController {
             valueObj.setName(""+values.get("name"));
             valueObj.setDescription(""+values.get("task_info"));
             valueObj.setDuration(Integer.valueOf(""+values.get("time_to_complete")));
-            valueObj.setDeadline(Integer.valueOf(""+values.get("deadline_timestamp")));
+            valueObj.setDeadline(DbConnection.getLocalDateForGivenInteger(Long.valueOf(""+values.get("deadline_timestamp"))));
+            valueObj.setPriority(Boolean.valueOf(""+values.get("is_priority")));
+            result.add(valueObj);
+        }
+
+        return result;
+    }
+
+    private List<TaskData> getCompletedTaskData(){
+        JSONArray data = DbConnection.getCompletedTaskInfo();
+        Iterator<Object> dataIter = data.iterator();
+        List<TaskData> result = new ArrayList<>();
+        while(dataIter.hasNext()){
+            JSONObject values = (JSONObject)dataIter.next();
+            TaskData valueObj = new TaskData();
+            valueObj.setId(Integer.valueOf("" + values.get("id")));
+            valueObj.setFolder_id(Integer.valueOf("" + values.get("folder_id")));
+            valueObj.setName(""+values.get("name"));
+            valueObj.setDescription(""+values.get("task_info"));
+            valueObj.setDuration(Integer.valueOf(""+values.get("time_to_complete")));
+            valueObj.setDeadline(DbConnection.getLocalDateForGivenInteger(Long.valueOf(""+values.get("deadline_timestamp"))));
             valueObj.setPriority(Boolean.valueOf(""+values.get("is_priority")));
             result.add(valueObj);
         }
@@ -244,7 +296,7 @@ public class mainController {
             valueObj.setName(""+values.get("name"));
             valueObj.setDescription(""+values.get("task_info"));
             valueObj.setDuration(Integer.valueOf(""+values.get("time_to_complete")));
-            valueObj.setDeadline(Integer.valueOf(""+values.get("deadline_timestamp")));
+            valueObj.setDeadline(DbConnection.getLocalDateForGivenInteger(Long.valueOf(""+values.get("deadline_timestamp"))));
             valueObj.setPriority(Boolean.valueOf(""+values.get("is_priority")));
             result.add(valueObj);
         }
@@ -258,7 +310,7 @@ public class mainController {
         String name;
         String description;
         Integer duration;
-        Integer deadline;
+        LocalDate deadline;
         Boolean priority;
 
         public Integer getId() {
@@ -285,10 +337,10 @@ public class mainController {
         public void setDuration(Integer duration) {
             this.duration = duration;
         }
-        public Integer getDeadline() {
+        public LocalDate getDeadline() {
             return deadline;
         }
-        public void setDeadline(Integer deadline) {
+        public void setDeadline(LocalDate deadline) {
             this.deadline = deadline;
         }
         public Boolean getPriority() {

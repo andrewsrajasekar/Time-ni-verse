@@ -1,15 +1,18 @@
 package com.timeniverse.db_utils;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 
 import org.bson.Document;
@@ -144,6 +147,19 @@ public class DbConnection {
         return data;
     }
 
+    public static Boolean isFolderExists(String foldername){
+        JSONArray folderData = getFolderInfo();
+        Iterator<Object> folderDataIter = folderData.iterator();
+        while(folderDataIter.hasNext()){
+            JSONObject data = (JSONObject) folderDataIter.next();
+            if(data.getString("name").equals(foldername)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static void insertFolderInfo(String foldername) {
         MongoCollection<Document> collection = database.getCollection(DB_TABLE_TYPE.FOLDERINFO.toString());
         Document document = new Document("id", getNextDataId(DB_TABLE_TYPE.FOLDERINFO))
@@ -245,33 +261,47 @@ public class DbConnection {
     public static JSONArray getTaskInfo() {
         MongoCollection<Document> collection = database.getCollection(DB_TABLE_TYPE.TASKINFO.toString());
         JSONArray data = new JSONArray();
-        FindIterable<Document> iterDoc = collection.find();
+        FindIterable<Document> iterDoc = collection.find(eq("is_completed", false));
         Iterator<Document> it = iterDoc.iterator();
         JsonWriterSettings relaxed = JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build();
         while (it.hasNext()) {
             Document document = it.next();
             JSONObject documentData = new JSONObject(document.toJson(relaxed));
             documentData.remove("_id");
-            if(!documentData.getBoolean("is_completed")){
-                data.put(documentData);
-            }
+            data.put(documentData);
         }
         return data;
     }   
 
-    public static JSONArray getTaskInfoBasedOnFolderId(Integer folderId) {
+    public static JSONArray getCompletedTaskInfo() {
         MongoCollection<Document> collection = database.getCollection(DB_TABLE_TYPE.TASKINFO.toString());
         JSONArray data = new JSONArray();
-        FindIterable<Document> iterDoc = collection.find(eq("folder_id", folderId));
+        FindIterable<Document> iterDoc = collection.find(eq("is_completed", true));
         Iterator<Document> it = iterDoc.iterator();
         JsonWriterSettings relaxed = JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build();
         while (it.hasNext()) {
             Document document = it.next();
             JSONObject documentData = new JSONObject(document.toJson(relaxed));
             documentData.remove("_id");
-            if(!documentData.getBoolean("is_completed")){
-                data.put(documentData);
-            }
+            data.put(documentData);
+        }
+        return data;
+    }  
+
+    public static JSONArray getTaskInfoBasedOnFolderId(Integer folderId) {
+        MongoCollection<Document> collection = database.getCollection(DB_TABLE_TYPE.TASKINFO.toString());
+        JSONArray data = new JSONArray();
+        BasicDBObject criteria = new BasicDBObject();
+        criteria.append("folder_id", folderId);
+        criteria.append("is_completed", false);
+        FindIterable<Document> iterDoc = collection.find(criteria);
+        Iterator<Document> it = iterDoc.iterator();
+        JsonWriterSettings relaxed = JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build();
+        while (it.hasNext()) {
+            Document document = it.next();
+            JSONObject documentData = new JSONObject(document.toJson(relaxed));
+            documentData.remove("_id");
+            data.put(documentData);
         }
         return data;
     } 
@@ -321,6 +351,14 @@ public class DbConnection {
             collection.deleteOne(eq("id", taskId));
             return true;
         }
+    }
+
+    public static LocalDate getLocalDateForGivenInteger(Long data){
+        return LocalDate.ofInstant(Instant.ofEpochMilli(Long.valueOf(data.toString())), TimeZone.getDefault().toZoneId());  
+    }
+
+    public static Long getTimeStampFromLocalDate(LocalDate data){
+        return Timestamp.valueOf(data.atStartOfDay()).getTime();
     }
 
 }

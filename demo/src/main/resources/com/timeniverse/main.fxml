@@ -77,7 +77,7 @@
    <Label style="-fx-wrap-text: true;" fx:id="detail_task_description"></Label>
 
    <HBox spacing="10">
-      <Button fx:id="finishButton" onAction="#handleTaskFinish">Finish</Button>
+      <Button fx:id="completeButton" onAction="#handleTaskFinish">Complete</Button>
       <Button fx:id="editButton" onAction="#handleEdit">Edit</Button>
       <Button fx:id="deleteButton" onAction="#handleTaskDelete" style="-fx-background-color: red; -fx-text-fill: white;">Delete</Button>
    </HBox>
