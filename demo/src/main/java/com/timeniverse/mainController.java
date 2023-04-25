@@ -26,6 +26,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
@@ -152,6 +153,10 @@ public class mainController {
 
         setListViewFolderInfo();
         listViewListener();
+
+        // completeButton.setPrefWidth(Control.USE_COMPUTED_SIZE);
+        // editButton.setPrefWidth(Control.USE_COMPUTED_SIZE);
+        // deleteButton.setPrefWidth(Control.USE_COMPUTED_SIZE);
     }
 
     public void searchTable(ActionEvent event){

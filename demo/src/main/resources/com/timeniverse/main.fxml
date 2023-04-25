@@ -91,9 +91,9 @@
 
 
    <HBox spacing="10">
-      <Button fx:id="completeButton" onAction="#handleTaskFinish">Complete</Button>
-      <Button fx:id="editButton" onAction="#handleEdit">Edit</Button>
-      <Button fx:id="deleteButton" onAction="#handleTaskDelete" style="-fx-background-color: red; -fx-text-fill: white;">Delete</Button>
+      <Button fx:id="completeButton" onAction="#handleTaskFinish" style="-fx-font-size:12;">Complete</Button>
+      <Button fx:id="editButton" onAction="#handleEdit" style="-fx-font-size:12;">Edit</Button>
+      <Button fx:id="deleteButton" onAction="#handleTaskDelete" style="-fx-background-color: red; -fx-text-fill: white;-fx-font-size:12;">Delete</Button>
    </HBox>
 
    </VBox>
