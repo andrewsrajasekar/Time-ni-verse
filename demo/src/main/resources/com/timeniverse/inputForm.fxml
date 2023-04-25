@@ -5,6 +5,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.control.*?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 
 <GridPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.timeniverse.inputFormController" hgap="10" vgap="10">
    <columnConstraints>
@@ -34,35 +36,71 @@
    GridPane.rowIndex="1" >
    </Label>
    <TextField fx:id="assignment" prefHeight="40" 
-         GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+         GridPane.columnIndex="1" GridPane.rowIndex="1">
+      <GridPane.margin>
+         <Insets right="30"/>
+      </GridPane.margin>   
+   </TextField>
 
-         <Label text="Task Description : " GridPane.columnIndex="0" 
+   <Label text="Task Description : " GridPane.columnIndex="0" 
    GridPane.rowIndex="2" >
    </Label>
    <TextField fx:id="description" prefHeight="40" 
-         GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+         GridPane.columnIndex="1" GridPane.rowIndex="2">
+      <GridPane.margin>
+         <Insets right="30"/>
+      </GridPane.margin>   
+   </TextField>
 
    <Label text="Duration to Complete (hours): " GridPane.columnIndex="0" 
    GridPane.rowIndex="3" >
    </Label>
    <TextField fx:id="duration" prefHeight="40" 
-         GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+         GridPane.columnIndex="1" GridPane.rowIndex="3">
+      <GridPane.margin>
+         <Insets right="30"/>
+      </GridPane.margin>   
+   </TextField>
 
-   <Label text="Deadline : " GridPane.columnIndex="0" 
+   <Label text="Deadline: " GridPane.columnIndex="0" 
    GridPane.rowIndex="4" >
    </Label>
-   <TextField fx:id="deadline" prefHeight="40" 
-            GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+    <DatePicker fx:id="deadline" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+   <!-- <TextField fx:id="deadline" prefHeight="40" 
+            GridPane.columnIndex="1" GridPane.rowIndex="4">
+      <GridPane.margin>
+         <Insets right="30"/>
+      </GridPane.margin>   
+   </TextField> -->
+
+   <Label text="Course : " GridPane.columnIndex="0" 
+            GridPane.rowIndex="6" >
+   </Label>
+   <ComboBox fx:id="group" prefHeight="40" 
+      GridPane.columnIndex="1" GridPane.rowIndex="6">
+      <items>
+         <FXCollections fx:factory="observableArrayList">
+         </FXCollections>
+     </items>
+   </ComboBox>
+
+   <Button fx:id="addFolders" onAction="#handleAddFolder" GridPane.columnIndex="1" 
+   GridPane.rowIndex="7">Add Courses</Button>
 
    <Label text="Priority Status : " GridPane.columnIndex="0" 
-   GridPane.rowIndex="5">
+   GridPane.rowIndex="8">
    </Label>
 
-   <GridPane GridPane.columnIndex="1" GridPane.rowIndex="5" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" >
+   <GridPane GridPane.columnIndex="1" GridPane.rowIndex="8" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" >
       <ToggleButton text="High" fx:id="priority_button" prefHeight="40"
       GridPane.columnIndex="1" GridPane.rowIndex="0"/>
    </GridPane>
 
-   <Button GridPane.columnIndex="1" GridPane.rowIndex="6" layoutX="210.0" layoutY="178.0" fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" text="Submit"></Button>
+  
+
+   <Button GridPane.columnIndex="1" GridPane.rowIndex="9" layoutX="210.0" layoutY="178.0" fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" text="Submit"></Button>
+   <Button GridPane.columnIndex="1" GridPane.rowIndex="9" layoutX="210.0" layoutY="178.0" fx:id="updateButton" mnemonicParsing="false" onAction="#handleSubmitButtonAction" visible="false" text="Update"></Button>
 
 </GridPane>
+

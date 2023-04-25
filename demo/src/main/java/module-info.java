@@ -4,7 +4,9 @@ module com.timeniverse {
     requires javafx.graphics;
     requires mongo.java.driver;
     requires org.json;
+    requires java.sql;
     requires java.logging;
+
     
     opens com.timeniverse to javafx.fxml;
     exports com.timeniverse;

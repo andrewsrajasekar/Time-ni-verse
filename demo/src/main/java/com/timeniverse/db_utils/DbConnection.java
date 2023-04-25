@@ -1,19 +1,28 @@
 package com.timeniverse.db_utils;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 
 import org.bson.Document;
 import org.bson.json.JsonMode;
 import org.bson.json.JsonWriterSettings;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.ConnectionString;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
@@ -21,6 +30,9 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Updates;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class DbConnection {
     private static final Logger LOG = Logger.getLogger(DbConnection.class.getName());
@@ -58,6 +70,9 @@ public class DbConnection {
         try {
             Properties properties = new Properties();
             String path = System.getProperty("user.dir");
+            if(!path.contains("Time-ni-verse")){
+                path +=  SLASH + "Time-ni-verse";
+            }
             if(!path.contains("demo")){
                 path +=  SLASH + "demo";
             }
@@ -135,6 +150,19 @@ public class DbConnection {
         return data;
     }
 
+    public static Boolean isFolderExists(String foldername){
+        JSONArray folderData = getFolderInfo();
+        Iterator<Object> folderDataIter = folderData.iterator();
+        while(folderDataIter.hasNext()){
+            JSONObject data = (JSONObject) folderDataIter.next();
+            if(data.getString("name").equals(foldername)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static void insertFolderInfo(String foldername) {
         MongoCollection<Document> collection = database.getCollection(DB_TABLE_TYPE.FOLDERINFO.toString());
         Document document = new Document("id", getNextDataId(DB_TABLE_TYPE.FOLDERINFO))
@@ -156,6 +184,39 @@ public class DbConnection {
             data.put(documentData);
         }
         return data;
+    }
+
+    public static JSONArray getFolderInfoInSortedOrder(JSONArray data) {
+
+        JSONArray sortedJsonArray = new JSONArray();
+        List<JSONObject> jsonList = new ArrayList<JSONObject>();
+        for (int i = 0; i < data.length(); i++) {
+            jsonList.add(data.getJSONObject(i));
+        }
+
+        Collections.sort( jsonList, new Comparator<JSONObject>() {
+
+            public int compare(JSONObject a, JSONObject b) {
+                Integer valA = 0;
+                Integer valB = 0;
+        
+                try {
+                    valA = a.getInt("order_number");
+                    valB = b.getInt("order_number");
+                } 
+                catch (JSONException ex) {
+                    //do something
+                }
+        
+                return valA.compareTo(valB);
+            }
+        });
+
+        for (int i = 0; i < jsonList.size(); i++) {
+            sortedJsonArray.put(jsonList.get(i));
+        }
+
+        return sortedJsonArray;
     }
 
     private static Integer getNextFolderOrderNo() {
@@ -203,7 +264,7 @@ public class DbConnection {
     public static JSONArray getTaskInfo() {
         MongoCollection<Document> collection = database.getCollection(DB_TABLE_TYPE.TASKINFO.toString());
         JSONArray data = new JSONArray();
-        FindIterable<Document> iterDoc = collection.find();
+        FindIterable<Document> iterDoc = collection.find(eq("is_completed", false));
         Iterator<Document> it = iterDoc.iterator();
         JsonWriterSettings relaxed = JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build();
         while (it.hasNext()) {
@@ -214,5 +275,93 @@ public class DbConnection {
         }
         return data;
     }   
+
+    public static JSONArray getCompletedTaskInfo() {
+        MongoCollection<Document> collection = database.getCollection(DB_TABLE_TYPE.TASKINFO.toString());
+        JSONArray data = new JSONArray();
+        FindIterable<Document> iterDoc = collection.find(eq("is_completed", true));
+        Iterator<Document> it = iterDoc.iterator();
+        JsonWriterSettings relaxed = JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build();
+        while (it.hasNext()) {
+            Document document = it.next();
+            JSONObject documentData = new JSONObject(document.toJson(relaxed));
+            documentData.remove("_id");
+            data.put(documentData);
+        }
+        return data;
+    }  
+
+    public static JSONArray getTaskInfoBasedOnFolderId(Integer folderId) {
+        MongoCollection<Document> collection = database.getCollection(DB_TABLE_TYPE.TASKINFO.toString());
+        JSONArray data = new JSONArray();
+        BasicDBObject criteria = new BasicDBObject();
+        criteria.append("folder_id", folderId);
+        criteria.append("is_completed", false);
+        FindIterable<Document> iterDoc = collection.find(criteria);
+        Iterator<Document> it = iterDoc.iterator();
+        JsonWriterSettings relaxed = JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build();
+        while (it.hasNext()) {
+            Document document = it.next();
+            JSONObject documentData = new JSONObject(document.toJson(relaxed));
+            documentData.remove("_id");
+            data.put(documentData);
+        }
+        return data;
+    } 
+
+    public static Boolean updateTaskCompletion(Integer id, Boolean isTaskCompleted) {
+        MongoCollection<Document> collection = database.getCollection(DB_TABLE_TYPE.TASKINFO.toString());
+        Document document = collection.find(eq("id", id)).first();
+        if (document == null) {
+            return false;
+        } else {
+            collection.updateOne(eq("id", id), Updates.set("is_completed", isTaskCompleted));
+            return true;
+        }
+    }
+
+    public static Boolean updateTask(Integer id, String taskname, String taskDescription, Integer folderId,
+            Long timeToComplete, Long deadline, Boolean isPriority) throws Exception {
+        if (!isFolderIdValid(folderId)) {
+            throw new Exception("Invalid Folder Id");
+        }
+
+        MongoCollection<Document> collection = database.getCollection(DB_TABLE_TYPE.TASKINFO.toString());
+        Document document = collection.find(eq("id", id)).first();
+        if (document == null) {
+            return false;
+        } else {
+            BasicDBObject updateFields = new BasicDBObject();
+            updateFields.append("folder_id", folderId);
+            updateFields.append("name", taskname);
+            updateFields.append("task_info", taskDescription);
+            updateFields.append("time_to_complete", timeToComplete);
+            updateFields.append("deadline_timestamp", deadline);
+            updateFields.append("is_priority", isPriority);
+            BasicDBObject setQuery = new BasicDBObject();
+            setQuery.append("$set", updateFields);
+            collection.updateOne(eq("id", id), setQuery);
+            return true;
+        }
+    }
+
+    public static boolean deleteTask(Integer taskId){
+        MongoCollection<Document> collection = database.getCollection(DB_TABLE_TYPE.TASKINFO.toString());
+        Document document = collection.find(eq("id", taskId)).first();
+        if (document == null) {
+            return false;
+        } else {
+            collection.deleteOne(eq("id", taskId));
+            return true;
+        }
+    }
+
+    public static LocalDate getLocalDateForGivenInteger(Long data){
+        return LocalDate.ofInstant(Instant.ofEpochMilli(Long.valueOf(data.toString())), TimeZone.getDefault().toZoneId());  
+    }
+
+    public static Long getTimeStampFromLocalDate(LocalDate data){
+        return Timestamp.valueOf(data.atStartOfDay()).getTime();
+    }
 
 }
